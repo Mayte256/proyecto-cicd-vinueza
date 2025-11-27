@@ -47,38 +47,25 @@ jobs:
           ghcr.io/mayte256/vinueza:1.0.5
           ghcr.io/mayte256/vinueza:latest
     
-    - name: 🧾 Mostrar info de conexión
+    - name: 📋 Show deployment info
       run: |
         echo "🎯 Desplegando para: Mayte Anahi Anchapanta Vinueza"
-        echo "Host: ${{ secrets.VPS_HOST }}"
-        echo "Usuario: ${{ secrets.VPS_USER }}"
-        echo "Puerto SSH: ${{ secrets.VPS_SSH_PORT }}"
+        echo "🏷️ Imagen: ghcr.io/mayte256/vinueza:1.0.5"
+        echo "🌐 Subdominio: vinueza.byronrm.com"
+        echo "🔌 Puerto: 1001"
     
-    - name: 🧪 Probar conexión SSH
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        password: ${{ secrets.VPS_PASSWORD }}
-        port: ${{ secrets.VPS_SSH_PORT }}
-        script: |
-          echo "✅ Conexión exitosa - Mayte Vinueza"
-          hostname
-          whoami
-    
-    - name: 📦 Copiar stack.yml a VPS
-      uses: appleboy/scp-action@v0.1.7
+    - name: 📦 Copy stack.yml to VPS
+      uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.VPS_HOST }}
         username: ${{ secrets.VPS_USER }}
         password: ${{ secrets.VPS_PASSWORD }}
         port: ${{ secrets.VPS_SSH_PORT }}
         source: "stack.yml"
-        target: "/home/${{ secrets.VPS_USER }}/vinueza-deploy/"
-        strip_components: 0
+        target: "/home/${{ secrets.VPS_USER }}/vinueza-deploy"
     
     - name: 🚀 Deploy to VPS
-      uses: appleboy/ssh-action@v1.0.3
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.VPS_HOST }}
         username: ${{ secrets.VPS_USER }}
@@ -99,6 +86,7 @@ jobs:
           cd /home/${{ secrets.VPS_USER }}/vinueza-deploy
           docker stack deploy -c stack.yml vinueza --with-registry-auth
           
-          echo "✅ Deployment complete - Mayte Anahi Anchapanta Vinueza"
-          echo "🔌 Puerto: 1001"
+          echo "✅ Deployment complete for Mayte Vinueza"
+          echo "🌐 Acceso: http://vinueza.byronrm.com"
+          echo "🔌 Puerto directo: http://161.97.140.245:1001"
           docker stack services vinueza
