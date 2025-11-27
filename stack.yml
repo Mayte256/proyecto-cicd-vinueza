@@ -1,26 +1,29 @@
-# Stack Docker Swarm - Mayte Anahi Anchapanta Vinueza
-version: '3.8'
+version: "3.8"
 
 services:
   vinueza-app:
     image: ghcr.io/mayte256/vinueza:1.0.5
+    
     ports:
-      - "1001:5000"
+      - "1004:5000"  # Puerto externo 1004 mapeado al interno 5000
+    
     deploy:
       replicas: 1
-      restart_policy:
-        condition: on-failure
       labels:
         - "traefik.enable=true"
+        - "traefik.http.routers.vinueza.entrypoints=http"
         - "traefik.http.routers.vinueza.rule=Host(`vinueza.byronrm.com`)"
-        - "traefik.http.routers.vinueza.entrypoints=websecure"
-        - "traefik.http.routers.vinueza.tls.certresolver=letsencrypt"
-        - "traefik.http.services.vinueza.loadbalancer.server.port=5000"
+        - "traefik.http.middlewares.vinueza-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.vinueza.middlewares=vinueza-https-redirect"
+        - "traefik.http.routers.vinueza-secure.entrypoints=https"
+        - "traefik.http.routers.vinueza-secure.rule=Host(`vinueza.byronrm.com`)"
+        - "traefik.http.routers.vinueza-secure.tls=true"
+        - "traefik.http.routers.vinueza-secure.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.vinueza-secure.service=vinueza-app"
+        - "traefik.http.services.vinueza-app.loadbalancer.server.port=5000"
+        - "traefik.docker.network=traefik-public"
     networks:
       - traefik-public
-    environment:
-      - ESTUDIANTE=Mayte Anahi Anchapanta Vinueza
-      - APELLIDO=Vinueza
 
 networks:
   traefik-public:
