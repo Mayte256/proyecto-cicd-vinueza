@@ -47,12 +47,12 @@ jobs:
           ghcr.io/mayte256/vinueza:1.0.5
           ghcr.io/mayte256/vinueza:latest
     
-    - name: 🧾 Mostrar info de conexión
+    - name: 📋 Show deployment info
       run: |
         echo "🎯 Desplegando para: Mayte Anahi Anchapanta Vinueza"
-        echo "Host: ${{ secrets.VPS_HOST }}"
-        echo "Usuario: ${{ secrets.VPS_USER }}"
-        echo "Puerto SSH: ${{ secrets.VPS_SSH_PORT }}"
+        echo "🏷️ Imagen: ghcr.io/mayte256/vinueza:1.0.5"
+        echo "🌐 Subdominio: vinueza.byronrm.com"
+        echo "🔌 Puerto: 1001"
     
     - name: 🧪 Probar conexión SSH
       uses: appleboy/ssh-action@v1.0.3
@@ -64,7 +64,6 @@ jobs:
         script: |
           echo "✅ Conexión exitosa - Mayte Vinueza"
           hostname
-          whoami
     
     - name: 📦 Copiar stack.yml a VPS
       uses: appleboy/scp-action@v0.1.7
@@ -97,8 +96,15 @@ jobs:
           
           echo "🚀 Deploy new stack"
           cd /home/${{ secrets.VPS_USER }}/vinueza-deploy
-          docker stack deploy -c stack.yml vinueza --with-registry-auth
+          docker stack deploy -c stack.yml vinueza
+          
+          echo "⏳ Esperando a que el servicio esté listo..."
+          sleep 20
           
           echo "✅ Deployment complete - Mayte Anahi Anchapanta Vinueza"
           echo "🔌 Puerto: 1001"
           docker stack services vinueza
+          docker service ps vinueza_vinueza-app
+          
+          echo "🧪 Probando la aplicación desde el servidor..."
+          curl -s http://localhost:1001 || echo "⚠️ La app no responde aún, puede tardar unos segundos más"
