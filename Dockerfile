@@ -11,7 +11,7 @@ COPY app.py .
 COPY test_app.py .
 
 # Exponer puerto
-EXPOSE 5000
+EXPOSE 1004
 
 # Etiquetas
 LABEL maintainer="Mayte Anahi Anchapanta Vinueza"
