@@ -44,13 +44,13 @@ jobs:
         context: .
         push: true
         tags: |
-          ghcr.io/${{ github.repository_owner }}/vinueza:1.0.5
-          ghcr.io/${{ github.repository_owner }}/vinueza:latest
+          ghcr.io/mayte256/vinueza:1.0.5
+          ghcr.io/mayte256/vinueza:latest
     
     - name: 📋 Show deployment info
       run: |
         echo "🎯 Desplegando para: Mayte Anahi Anchapanta Vinueza"
-        echo "🏷️ Imagen: ghcr.io/${{ github.repository_owner }}/vinueza:1.0.5"
+        echo "🏷️ Imagen: ghcr.io/mayte256/vinueza:1.0.5"
         echo "🌐 Subdominio: vinueza.byronrm.com"
         echo "🔌 Puerto: 1001"
     
@@ -73,10 +73,10 @@ jobs:
         port: ${{ secrets.VPS_SSH_PORT }}
         script: |
           echo "🔐 Login to GHCR"
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u mayte256 --password-stdin
           
           echo "📥 Pull latest image"
-          docker pull ghcr.io/${{ github.repository_owner }}/vinueza:1.0.5
+          docker pull ghcr.io/mayte256/vinueza:1.0.5
           
           echo "🛑 Remove old stack"
           docker stack rm vinueza || true
@@ -90,4 +90,3 @@ jobs:
           echo "🌐 Acceso: http://vinueza.byronrm.com"
           echo "🔌 Puerto directo: http://161.97.140.245:1001"
           docker stack services vinueza
-          
