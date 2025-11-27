@@ -54,18 +54,20 @@ jobs:
         echo "Usuario: ${{ secrets.VPS_USER }}"
         echo "Puerto SSH: ${{ secrets.VPS_SSH_PORT }}"
     
+    # ✅ FIX: usamos appleboy estable (v0.1.7), NO v1.0.3 ni master
     - name: 🧪 Probar conexión SSH
-      uses: appleboy/ssh-action@v1.0.3
+      uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.VPS_HOST }}
         username: ${{ secrets.VPS_USER }}
         password: ${{ secrets.VPS_PASSWORD }}
         port: ${{ secrets.VPS_SSH_PORT }}
         script: |
-          echo "✅ Conexión exitosa - Mayte Vinueza"
+          echo "✅ Conexión SSH exitosa - Mayte Vinueza"
           hostname
           whoami
     
+    # 📦 Copiar el archivo stack.yml al VPS
     - name: 📦 Copiar stack.yml a VPS
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -77,8 +79,9 @@ jobs:
         target: "/home/${{ secrets.VPS_USER }}/vinueza-deploy/"
         strip_components: 0
     
+    # 🚀 Deploy a Docker Swarm
     - name: 🚀 Deploy to VPS
-      uses: appleboy/ssh-action@v1.0.3
+      uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.VPS_HOST }}
         username: ${{ secrets.VPS_USER }}
@@ -100,5 +103,6 @@ jobs:
           docker stack deploy -c stack.yml vinueza --with-registry-auth
           
           echo "✅ Deployment complete - Mayte Anahi Anchapanta Vinueza"
-          echo "🔌 Puerto: 1001"
+          echo "🌐 Dominio: https://vinueza.byronrm.com"
+          echo "🔌 Puerto directo: http://161.97.140.245:1001"
           docker stack services vinueza
