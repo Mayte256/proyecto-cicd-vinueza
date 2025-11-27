@@ -46,37 +46,19 @@ jobs:
           ghcr.io/mayte256/vinueza:1.0.5
           ghcr.io/mayte256/vinueza:latest
     
-    - name: 🧾 Mostrar info de conexión
-      run: |
-        echo "🎯 Desplegando para: Mayte Anahi Anchapanta Vinueza"
-        echo "Host: ${{ secrets.VPS_HOST }}"
-        echo "Usuario: ${{ secrets.VPS_USER }}"
-        echo "Puerto SSH: ${{ secrets.VPS_SSH_PORT }}"
-    
-    - name: 🧪 Probar conexión SSH
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        password: ${{ secrets.VPS_PASSWORD }}
-        port: ${{ secrets.VPS_SSH_PORT }}
-        script: |
-          echo "✅ Conexión SSH exitosa - Mayte Vinueza"
-          hostname
-          whoami
-    
-    - name: 📦 Copiar stack.yml a VPS
+    - name: 📦 Copiar stack.yml y script fix_ssh a VPS
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.VPS_HOST }}
         username: ${{ secrets.VPS_USER }}
         password: ${{ secrets.VPS_PASSWORD }}
         port: ${{ secrets.VPS_SSH_PORT }}
-        source: "stack.yml"
+        source: |
+          stack.yml
+          fix_ssh.sh
         target: "/home/${{ secrets.VPS_USER }}/vinueza-deploy/"
-        strip_components: 0
     
-    - name: 🚀 Deploy to VPS
+    - name: 🚀 Ejecutar limpieza y deploy en VPS
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.VPS_HOST }}
@@ -84,20 +66,24 @@ jobs:
         password: ${{ secrets.VPS_PASSWORD }}
         port: ${{ secrets.VPS_SSH_PORT }}
         script: |
-          echo "🔐 Login to GHCR"
+          echo "🔹 Ejecutando script de limpieza SSH..."
+          chmod +x ~/vinueza-deploy/fix_ssh.sh
+          ~/vinueza-deploy/fix_ssh.sh
+          
+          echo "🔹 Login a GHCR"
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u mayte256 --password-stdin
           
           echo "📥 Pull latest image"
           docker pull ghcr.io/mayte256/vinueza:1.0.5
           
-          echo "🛑 Remove old stack"
+          echo "🛑 Removiendo stack anterior"
           docker stack rm vinueza || true
           sleep 15
           
-          echo "🚀 Deploy new stack"
-          cd /home/${{ secrets.VPS_USER }}/vinueza-deploy
+          echo "🚀 Deploy stack nuevo"
+          cd ~/vinueza-deploy
           docker stack deploy -c stack.yml vinueza --with-registry-auth
           
-          echo "✅ Deployment complete - Mayte Anahi Anchapanta Vinueza"
-          echo "🔌 Puerto: 1001"
+          echo "✅ Deploy completo"
           docker stack services vinueza
+          echo "🔌 Puerto de aplicación: 1001"
