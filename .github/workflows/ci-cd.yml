@@ -102,4 +102,4 @@ jobs:
           
           echo "✅ Deployment completo"
           echo "🌐 Puerto externo: 1004"
-          docker stack services vinueza
+          docker stack services vinuezaa
