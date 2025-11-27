@@ -5,17 +5,17 @@ services:
   vinueza-app:
     image: ghcr.io/mayte256/vinueza:1.0.5
     ports:
-      - target: 5000
-        published: 1001
-        mode: host
+      - "1001:5000"
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
-        delay: 5s
-      placement:
-        constraints:
-          - node.role == manager
+    networks:
+      - traefik-public
     environment:
       - ESTUDIANTE=Mayte Anahi Anchapanta Vinueza
       - APELLIDO=Vinueza
+
+networks:
+  traefik-public:
+    external: true
